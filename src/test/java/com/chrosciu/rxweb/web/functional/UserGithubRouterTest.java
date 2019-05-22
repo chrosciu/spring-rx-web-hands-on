@@ -34,7 +34,7 @@ public class UserGithubRouterTest {
     }
 
     @Test
-    public void getAllUsersReposTest() {
+    public void testGetAllUsersRepos() {
         List<User> users = Arrays.asList(JANUSZ, MIREK);
         when(userRepository.findAll()).thenReturn(Flux.fromIterable(users));
         users.forEach(u -> {

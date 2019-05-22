@@ -1,12 +1,14 @@
 package com.chrosciu.rxweb.web.client;
 
 import com.chrosciu.rxweb.model.GithubRepo;
+import com.chrosciu.rxweb.model.GithubUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
@@ -33,4 +35,20 @@ public class GithubClient {
                 .exchange()
                 .flatMapMany(response -> response.bodyToFlux(GithubRepo.class));
     }
+
+    public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
+        Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId);
+        Mono<Long> lastUserId = currentPageUntilTo.last().map(GithubUser::getId);
+        Flux<GithubUser> nextPage = lastUserId.flatMapMany(l -> l >= toId ? Flux.empty() : getUsersInRange(l, toId));
+        return currentPageUntilTo.concatWith(nextPage);
+    }
+
+    private Flux<GithubUser> getPageOfUsers(long sinceId) {
+        return webClient.get()
+                .uri("/users?since={sinceId}", sinceId)
+                .exchange()
+                .flatMapMany(response -> response.bodyToFlux(GithubUser.class));
+    }
+
+
 }
