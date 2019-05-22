@@ -3,7 +3,6 @@ package com.chrosciu.rxweb.web.mvc;
 import com.chrosciu.rxweb.model.User;
 import com.chrosciu.rxweb.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,13 +16,12 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/mvc")
 @RequiredArgsConstructor
-@Slf4j
 public class UserMvcController {
     private final UserRepository userRepository;
 
     @GetMapping("/users")
     public Flux<User> getAllUsers() {
-        return userRepository.findAll().doOnNext(u -> log.info(u.toString()));
+        return userRepository.findAll();
     }
 
     @GetMapping("/users/{id}")
