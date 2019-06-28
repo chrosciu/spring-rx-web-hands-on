@@ -3,6 +3,7 @@ package com.chrosciu.rxweb.web.client;
 import com.chrosciu.rxweb.model.GithubRepo;
 import com.chrosciu.rxweb.model.GithubUser;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Slf4j
+@Ignore("For manual run only")
 public class GithubClientIT {
     @Autowired
     private GithubClient githubClient;
