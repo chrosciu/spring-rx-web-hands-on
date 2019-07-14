@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
@@ -29,26 +28,15 @@ public class GithubClient {
                 .build();
     }
 
+    //TODO Return all repos for given GitHub user
+    //Use following GitHub endpoint: /users/{user}/repos
     public Flux<GithubRepo> getUserRepos(String user) {
-        return webClient.get()
-                .uri("/users/{user}/repos", user)
-                .exchange()
-                .flatMapMany(response -> response.bodyToFlux(GithubRepo.class));
+        return null;
     }
 
+    //TODO Return all GitHub users with id in range from sinceId (exclusively) to toId (inclusively)
+    //Use following GitHub endpoint: /users?since={sinceId}
     public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
-        Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId);
-        Mono<Long> lastUserId = currentPageUntilTo.last().map(GithubUser::getId);
-        Flux<GithubUser> nextPage = lastUserId.flatMapMany(l -> l >= toId ? Flux.empty() : getUsersInRange(l, toId));
-        return currentPageUntilTo.concatWith(nextPage);
+        return null;
     }
-
-    private Flux<GithubUser> getPageOfUsers(long sinceId) {
-        return webClient.get()
-                .uri("/users?since={sinceId}", sinceId)
-                .exchange()
-                .flatMapMany(response -> response.bodyToFlux(GithubUser.class));
-    }
-
-
 }

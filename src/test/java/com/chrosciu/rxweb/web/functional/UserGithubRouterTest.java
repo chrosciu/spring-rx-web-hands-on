@@ -46,7 +46,7 @@ public class UserGithubRouterTest {
         });
         webTestClient
                 .get()
-                .uri("/users/repos")
+                .uri("/functional/users/repos")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
