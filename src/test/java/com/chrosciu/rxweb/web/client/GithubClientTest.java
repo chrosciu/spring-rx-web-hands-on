@@ -1,5 +1,6 @@
 package com.chrosciu.rxweb.web.client;
 
+import com.chrosciu.rxweb.model.GithubBranch;
 import com.chrosciu.rxweb.model.GithubRepo;
 import com.chrosciu.rxweb.model.GithubUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -40,21 +42,60 @@ public class GithubClientTest {
     public void testGetRepos() {
         //given
         String user = "johndoe";
-        GithubRepo githubRepo1 = GithubRepo.builder().id(1L).name("test").build();
-        GithubRepo githubRepo2 = GithubRepo.builder().id(2L).name("foobar").build();
-        List<GithubRepo> githubRepos = Arrays.asList(githubRepo1, githubRepo2);
-        String githubRepoJson = writeJsonValue(githubRepos);
+        GithubRepo repo1 = GithubRepo.builder().name("test").build();
+        GithubRepo repo2 = GithubRepo.builder().name("foobar").build();
+        List<GithubRepo> repos = Arrays.asList(repo1, repo2);
+        String reposJson = writeJsonValue(repos);
         stubFor(get(urlEqualTo(String.format("/users/%s/repos", user)))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(githubRepoJson)));
+                        .withBody(reposJson)));
         //when
-        Flux<GithubRepo> repos = githubClient.getUserRepos(user);
+        Flux<GithubRepo> reposResult = githubClient.getUserRepos(user);
         //then
-        StepVerifier.create(repos)
-                .expectNext(githubRepo1, githubRepo2)
+        StepVerifier.create(reposResult)
+                .expectNext(repo1, repo2)
                 .verifyComplete();
+    }
+
+    @Test
+    public void testGetUserNotProtectedBranches() {
+        //given
+        String user = "johndoe";
+        GithubRepo repo1 = GithubRepo.builder().name("test").build();
+        GithubRepo repo2 = GithubRepo.builder().name("foobar").build();
+        List<GithubRepo> githubRepos = Arrays.asList(repo1, repo2);
+        String githubReposJson = writeJsonValue(githubRepos);
+        stubFor(get(urlEqualTo(String.format("/users/%s/repos", user)))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(githubReposJson)));
+        GithubBranch branch1 = GithubBranch.builder().name("master").protect(true).build();
+        GithubBranch branch2 = GithubBranch.builder().name("develop").protect(true).build();
+        GithubBranch branch3 = GithubBranch.builder().name("feature").protect(false).build();
+        GithubBranch branch4 = GithubBranch.builder().name("master").protect(true).build();
+        GithubBranch branch5 = GithubBranch.builder().name("develop").protect(false).build();
+        GithubBranch branch6 = GithubBranch.builder().name("hotfix").protect(false).build();
+        List<GithubBranch> branchesForRepo1 = Arrays.asList(branch1, branch2, branch3);
+        List<GithubBranch> branchesForRepo2 = Arrays.asList(branch4, branch5, branch6);
+        String branchesForRepo1Json = writeJsonValue(branchesForRepo1);
+        String branchesForRepo2Json = writeJsonValue(branchesForRepo2);
+        stubFor(get(urlEqualTo(String.format("/repos/%s/%s/branches", user, repo1.getName())))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(branchesForRepo1Json)));
+        stubFor(get(urlEqualTo(String.format("/repos/%s/%s/branches", user, repo2.getName())))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(branchesForRepo2Json)));
+        //when
+        Mono<Long> branchesCount = githubClient.getUserNotProtectedBranchesCount(user);
+        //then
+        StepVerifier.create(branchesCount).expectNext(3L).verifyComplete();
     }
 
 

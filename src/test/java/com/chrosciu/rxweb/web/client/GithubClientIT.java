@@ -25,6 +25,12 @@ public class GithubClientIT {
     }
 
     @Test
+    public void testGetUserPublicBranchesCount() {
+        Long branchesCount = githubClient.getUserNotProtectedBranchesCount("chrosciu").block();
+        log.info("{}", branchesCount);
+    }
+
+    @Test
     public void testGetUsersInRange() {
         Iterable<GithubUser> repos = githubClient.getUsersInRange(200, 240).toIterable();
         repos.forEach(u -> log.info("{} -> {}", u.getId(), u.getLogin()));

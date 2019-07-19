@@ -36,6 +36,10 @@ public class GithubClient {
                 .flatMapMany(response -> response.bodyToFlux(GithubRepo.class));
     }
 
+    public Mono<Long> getUserNotProtectedBranchesCount(String user) {
+        return null;
+    }
+
     public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
         Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId);
         Mono<Long> lastUserId = currentPageUntilTo.last().map(GithubUser::getId);
