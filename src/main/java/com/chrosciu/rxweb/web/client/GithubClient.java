@@ -1,5 +1,6 @@
 package com.chrosciu.rxweb.web.client;
 
+import com.chrosciu.rxweb.model.GithubBranch;
 import com.chrosciu.rxweb.model.GithubRepo;
 import com.chrosciu.rxweb.model.GithubUser;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,16 @@ public class GithubClient {
     }
 
     public Mono<Long> getUserNotProtectedBranchesCount(String user) {
-        return null;
+        return getUserRepos(user).flatMap(repo -> getRepoPublicBranches(user, repo.getName())).count();
+    }
+
+    private Flux<GithubBranch> getRepoPublicBranches(String user, String repo) {
+        return webClient.get()
+                .uri("/repos/{user}/{repo}/branches", user, repo)
+                .exchange()
+                .flatMapMany(response -> response
+                        .bodyToFlux(GithubBranch.class)
+                        .filter(gb -> !Boolean.TRUE.equals(gb.getProtect())));
     }
 
     public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
