@@ -1,5 +1,6 @@
 package com.chrosciu.rxweb.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GithubRepo {
+public class GithubBranch {
     private String name;
+    @JsonProperty("protected")
+    private Boolean protect;
 }
-

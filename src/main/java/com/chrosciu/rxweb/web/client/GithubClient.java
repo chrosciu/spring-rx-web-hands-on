@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
@@ -31,6 +32,12 @@ public class GithubClient {
     //TODO Return all repos for given GitHub user
     //Use following GitHub endpoint: /users/{user}/repos
     public Flux<GithubRepo> getUserRepos(String user) {
+        return null;
+    }
+
+    //TODO Return number of all not protected branches in all repos for given GitHub user
+    //Use following GitHub endpoints: /users/{user}/repos, /repos/{user}/{repo}/branches and GithubBranch class
+    public Mono<Long> getUserNotProtectedBranchesCount(String user) {
         return null;
     }
 
