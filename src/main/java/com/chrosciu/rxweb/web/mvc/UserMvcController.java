@@ -25,7 +25,7 @@ public class UserMvcController {
     }
 
     @GetMapping("/users/{id}")
-    public Mono<User> getUsers(@PathVariable("id") String id) {
+    public Mono<User> getUser(@PathVariable("id") String id) {
         return userRepository.findById(id);
     }
 
