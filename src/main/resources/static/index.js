@@ -11,6 +11,13 @@ source.onmessage = function(event) {
     document.getElementById("result").innerHTML += event.data + "<br>";
 };
 
+
+var userSocket = new WebSocket('ws://localhost:8080/ws/users');
+
+userSocket.onmessage = function (evt) {
+    console.log("User is received...", evt.data);
+};
+
 var socket = new WebSocket('ws://localhost:8080/ws/ticks');
 
 socket.onopen = function(evt) {
