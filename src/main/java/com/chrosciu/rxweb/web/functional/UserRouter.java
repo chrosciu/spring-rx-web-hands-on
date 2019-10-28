@@ -37,7 +37,7 @@ public class UserRouter {
     }
 
     private Mono<ServerResponse> addUser(ServerRequest request) {
-        return ServerResponse.ok().body(request.bodyToMono(User.class).doOnNext(userRepository::save), User.class);
+        return ServerResponse.ok().body(request.bodyToMono(User.class).flatMap(userRepository::save), User.class);
     }
 
     private Mono<ServerResponse> deleteUser(ServerRequest request) {
