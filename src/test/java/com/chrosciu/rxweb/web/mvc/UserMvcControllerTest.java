@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.chrosciu.rxweb.util.Users.JANUSZ;
+import static com.chrosciu.rxweb.util.Users.JANUSZ_UNSAVED;
 import static com.chrosciu.rxweb.util.Users.MIREK;
 import static org.mockito.Mockito.when;
 
@@ -53,14 +54,15 @@ public class UserMvcControllerTest {
 
     @Test
     public void testAddUser() {
-        when(userRepository.save(JANUSZ)).thenReturn(Mono.just(JANUSZ));
+        when(userRepository.save(JANUSZ_UNSAVED)).thenReturn(Mono.just(JANUSZ));
         webTestClient
                 .post()
                 .uri("/mvc/users")
-                .body(Mono.just(JANUSZ), User.class)
+                .body(Mono.just(JANUSZ_UNSAVED), User.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
                 .jsonPath("$.firstName").isEqualTo("Janusz");
     }
 
