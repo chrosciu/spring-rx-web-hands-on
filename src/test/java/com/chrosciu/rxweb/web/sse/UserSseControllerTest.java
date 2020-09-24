@@ -1,8 +1,9 @@
 package com.chrosciu.rxweb.web.sse;
 
 import com.chrosciu.rxweb.repository.UserRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.codec.ServerSentEvent;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -16,7 +17,7 @@ public class UserSseControllerTest {
     private UserRepository userRepository;
     private UserSseController userSseController;
 
-    @Before
+    @BeforeEach
     public void setup() {
         userRepository = mock(UserRepository.class);
         userSseController = new UserSseController(userRepository);

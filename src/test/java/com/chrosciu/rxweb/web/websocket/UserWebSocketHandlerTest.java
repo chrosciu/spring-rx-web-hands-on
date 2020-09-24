@@ -2,13 +2,14 @@ package com.chrosciu.rxweb.web.websocket;
 
 import com.chrosciu.rxweb.repository.UserRepository;
 import lombok.NonNull;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -22,14 +23,14 @@ import java.util.function.Consumer;
 import static com.chrosciu.rxweb.util.Users.JANUSZ;
 import static com.chrosciu.rxweb.util.Users.MIREK;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.web.reactive.socket.WebSocketMessage.Type.TEXT;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UserWebSocketHandlerTest {
     private UserRepository userRepository;
     private UserWebSocketHandler userWebSocketHandler;
@@ -38,7 +39,7 @@ public class UserWebSocketHandlerTest {
     @Captor
     private ArgumentCaptor<Flux<WebSocketMessage>> captor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         userRepository = Mockito.mock(UserRepository.class);
         webSocketSession = Mockito.mock(WebSocketSession.class);

@@ -4,8 +4,9 @@ import com.chrosciu.rxweb.model.GithubRepo;
 import com.chrosciu.rxweb.model.User;
 import com.chrosciu.rxweb.repository.UserRepository;
 import com.chrosciu.rxweb.web.client.GithubClient;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 
@@ -25,7 +26,7 @@ public class UserGithubRouterTest {
     private UserGithubRouter userGithubRouter;
     private WebTestClient webTestClient;
 
-    @Before
+    @BeforeEach
     public void setup() {
         userRepository = mock(UserRepository.class);
         githubClient = mock(GithubClient.class);
