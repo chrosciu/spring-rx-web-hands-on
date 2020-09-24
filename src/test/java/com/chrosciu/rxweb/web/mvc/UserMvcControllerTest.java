@@ -2,8 +2,9 @@ package com.chrosciu.rxweb.web.mvc;
 
 import com.chrosciu.rxweb.model.User;
 import com.chrosciu.rxweb.repository.UserRepository;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -19,7 +20,7 @@ public class UserMvcControllerTest {
     private UserMvcController userMvcController;
     private WebTestClient webTestClient;
 
-    @Before
+    @BeforeEach
     public void setup() {
         userRepository = Mockito.mock(UserRepository.class);
         userMvcController = new UserMvcController(userRepository);

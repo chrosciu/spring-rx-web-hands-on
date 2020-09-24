@@ -5,11 +5,11 @@ import com.chrosciu.rxweb.model.GithubRepo;
 import com.chrosciu.rxweb.model.GithubUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -22,20 +22,25 @@ import java.util.stream.LongStream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-@Slf4j
 public class GithubClientTest {
+    private WireMockServer wireMockServer;
     private GithubClient githubClient;
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
-
-    @Before
+    @BeforeEach
     public void setup() {
-        githubClient = new GithubClient(String.format("http://localhost:%d", wireMockRule.port()), null, null);
+        wireMockServer = new WireMockServer(options().dynamicPort().dynamicHttpsPort());
+        wireMockServer.start();
+        githubClient = new GithubClient(String.format("http://localhost:%d", wireMockServer.port()), null, null);
+    }
+
+    @AfterEach
+    public void cleanup() {
+        wireMockServer.stop();
+        wireMockServer.resetAll();
+        wireMockServer = null;
     }
 
     @Test
@@ -46,7 +51,7 @@ public class GithubClientTest {
         GithubRepo repo2 = GithubRepo.builder().name("foobar").build();
         List<GithubRepo> repos = Arrays.asList(repo1, repo2);
         String reposJson = writeJsonValue(repos);
-        stubFor(get(urlEqualTo(String.format("/users/%s/repos", user)))
+        wireMockServer.stubFor(get(urlEqualTo(String.format("/users/%s/repos", user)))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -67,7 +72,7 @@ public class GithubClientTest {
         GithubRepo repo2 = GithubRepo.builder().name("foobar").build();
         List<GithubRepo> githubRepos = Arrays.asList(repo1, repo2);
         String githubReposJson = writeJsonValue(githubRepos);
-        stubFor(get(urlEqualTo(String.format("/users/%s/repos", user)))
+        wireMockServer.stubFor(get(urlEqualTo(String.format("/users/%s/repos", user)))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -82,12 +87,12 @@ public class GithubClientTest {
         List<GithubBranch> branchesForRepo2 = Arrays.asList(branch4, branch5, branch6);
         String branchesForRepo1Json = writeJsonValue(branchesForRepo1);
         String branchesForRepo2Json = writeJsonValue(branchesForRepo2);
-        stubFor(get(urlEqualTo(String.format("/repos/%s/%s/branches", user, repo1.getName())))
+        wireMockServer.stubFor(get(urlEqualTo(String.format("/repos/%s/%s/branches", user, repo1.getName())))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(branchesForRepo1Json)));
-        stubFor(get(urlEqualTo(String.format("/repos/%s/%s/branches", user, repo2.getName())))
+        wireMockServer.stubFor(get(urlEqualTo(String.format("/repos/%s/%s/branches", user, repo2.getName())))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -109,7 +114,7 @@ public class GithubClientTest {
         IntStream.rangeClosed(0, 1)
                 .map(i -> i * 5)
                 .forEach(i -> {
-                    stubFor(get(urlEqualTo(String.format("/users?since=%d", i)))
+                    wireMockServer.stubFor(get(urlEqualTo(String.format("/users?since=%d", i)))
                             .willReturn(aResponse()
                                     .withStatus(200)
                                     .withHeader("Content-Type", "application/json")
