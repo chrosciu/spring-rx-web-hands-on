@@ -1,0 +1,9 @@
+.title {
+    color: green;
+}
+div {
+    margin: 2px;
+}
+div.separator {
+    border: 1px solid;
+}

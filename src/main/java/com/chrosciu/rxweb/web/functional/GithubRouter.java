@@ -10,16 +10,17 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 @RequiredArgsConstructor
-public class UserGithubRouter {
+public class GithubRouter {
     private final UserRepository userRepository;
     private final GithubClient githubClient;
 
     @Bean
-    RouterFunction<ServerResponse> userGithubRoutes() {
+    RouterFunction<ServerResponse> githubRoutes() {
         return null;
     }
 
-    //TODO Create following REST endpoint using functional endpoints
-    //GET /functional/users/repos - should return all GitHub repositories of all users
-
+    //TODO Create following REST endpoints using functional endpoints
+    //GET /functional/github/users/repos - should return all GitHub repositories of all users
+    //GET /functional/github/users/{id}/repos - should return all GitHub repositories of user with given ID.
+    //(if there is no such user - HTTP 404 status code should be returned instead)
 }

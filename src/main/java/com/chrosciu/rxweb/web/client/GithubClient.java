@@ -5,6 +5,7 @@ import com.chrosciu.rxweb.model.GithubUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -20,13 +21,25 @@ public class GithubClient {
                         @Value("${github.password:#{null}}") String githubPassword) {
         webClient = WebClient.builder()
                 .baseUrl(githubUrl)
-                .filter((request, next) -> {
-                    if (githubUsername != null && !githubUsername.isEmpty() && githubPassword != null && !githubPassword.isEmpty()) {
-                        next.filter(ExchangeFilterFunctions.basicAuthentication(githubUsername, githubPassword));
-                    }
-                    return next.exchange(request);
-                })
+                .filter(buildAuthenticationFilter(githubUsername, githubPassword))
                 .build();
+    }
+
+    private ExchangeFilterFunction buildAuthenticationFilter(String githubUsername, String githubPassword) {
+        if (areCredentialsProvided(githubUsername, githubPassword)) {
+            log.info("Created WebClient authentication filter with credentials(username: {})", githubUsername);
+            return (request, next) -> {
+                next.filter(ExchangeFilterFunctions.basicAuthentication(githubUsername, githubPassword));
+                return next.exchange(request);
+            };
+        } else {
+            log.info("Created WebClient authentication filter without credentials");
+            return (request, next) -> next.exchange(request);
+        }
+    }
+
+    private boolean areCredentialsProvided(String githubUsername, String githubPassword) {
+        return githubUsername != null && !githubUsername.isEmpty() && githubPassword != null && !githubPassword.isEmpty();
     }
 
     //TODO Return all repos for given GitHub user

@@ -13,7 +13,9 @@ public class UserWebSocketHandler implements WebSocketHandler {
     private final UserRepository userRepository;
 
     @Override
-    //TODO Send all users as WebSocket text messages in format "{firstName} {lastName}"
+    //TODO Receive first text message from WebSocket - this will be user login
+    //Then search for user with this login in database
+    //If found - send user as WebSocket text messages in format "{firstName} {lastName}"
     public Mono<Void> handle(WebSocketSession session) {
         return null;
     }
