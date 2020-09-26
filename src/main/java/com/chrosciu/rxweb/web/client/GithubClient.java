@@ -5,9 +5,8 @@ import com.chrosciu.rxweb.model.GithubRepo;
 import com.chrosciu.rxweb.model.GithubUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,24 +17,24 @@ public class GithubClient {
     private final WebClient webClient;
 
     public GithubClient(@Value("${github.url}") String githubUrl,
+                        @Value("${github.token:#{null}}") String githubToken,
                         @Value("${github.username:#{null}}") String githubUsername,
                         @Value("${github.password:#{null}}") String githubPassword) {
         webClient = WebClient.builder()
                 .baseUrl(githubUrl)
-                .filter(buildAuthenticationFilter(githubUsername, githubPassword))
+                .defaultHeaders(httpHeaders -> addAuthenticationHeaders(httpHeaders, githubToken, githubUsername, githubPassword))
                 .build();
     }
 
-    private ExchangeFilterFunction buildAuthenticationFilter(String githubUsername, String githubPassword) {
-        if (areCredentialsProvided(githubUsername, githubPassword)) {
-            log.info("Created WebClient authentication filter with credentials(username: {})", githubUsername);
-            return (request, next) -> {
-                next.filter(ExchangeFilterFunctions.basicAuthentication(githubUsername, githubPassword));
-                return next.exchange(request);
-            };
+    private void addAuthenticationHeaders(HttpHeaders httpHeaders, String githubToken, String githubUsername, String githubPassword) {
+        if (githubToken != null && !githubToken.isEmpty()) {
+            log.info("Created WebClient authentication filter with token");
+            httpHeaders.set("Authorization", "token " + githubToken);
+        } else if (areCredentialsProvided(githubUsername, githubPassword)) {
+            log.info("WebClient authentication headers with credentials(username: {})", githubUsername);
+            httpHeaders.setBasicAuth(githubUsername, githubPassword);
         } else {
-            log.info("Created WebClient authentication filter without credentials");
-            return (request, next) -> next.exchange(request);
+            log.info("WebClient without authentication headers");
         }
     }
 

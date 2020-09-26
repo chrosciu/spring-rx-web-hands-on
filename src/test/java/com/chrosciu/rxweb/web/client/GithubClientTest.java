@@ -3,7 +3,6 @@ package com.chrosciu.rxweb.web.client;
 import com.chrosciu.rxweb.model.GithubBranch;
 import com.chrosciu.rxweb.model.GithubRepo;
 import com.chrosciu.rxweb.model.GithubUser;
-import com.chrosciu.rxweb.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -22,8 +21,8 @@ import java.util.stream.LongStream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 public class GithubClientTest {
     private WireMockServer wireMockServer;
@@ -33,7 +32,7 @@ public class GithubClientTest {
     public void setup() {
         wireMockServer = new WireMockServer(options().dynamicPort().dynamicHttpsPort());
         wireMockServer.start();
-        githubClient = new GithubClient(String.format("http://localhost:%d", wireMockServer.port()), null, null);
+        githubClient = new GithubClient(String.format("http://localhost:%d", wireMockServer.port()), null, null, null);
     }
 
     @AfterEach
