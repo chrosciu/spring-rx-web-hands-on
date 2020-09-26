@@ -1,9 +1,9 @@
 package com.chrosciu.rxweb.web.websocket;
 
+import com.chrosciu.rxweb.model.User;
 import com.chrosciu.rxweb.repository.UserRepository;
 import lombok.NonNull;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.data.domain.Example;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
@@ -20,8 +21,8 @@ import reactor.test.StepVerifier;
 
 import java.util.function.Consumer;
 
-import static com.chrosciu.rxweb.util.Users.JANUSZ;
-import static com.chrosciu.rxweb.util.Users.MIREK;
+import static com.chrosciu.rxweb.data.TestUsers.CHROSCIU;
+import static com.chrosciu.rxweb.data.TestUsers.OCTOCAT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,21 +48,23 @@ public class UserWebSocketHandlerTest {
     }
 
     @Test
-    public void testGetAllUsersByWebSockets() {
+    public void testGetUserByWebSockets() {
         //given
         Mono<Void> result = Mono.empty();
-        when(userRepository.findAll()).thenReturn(Flux.just(JANUSZ, MIREK));
+        when(userRepository.findAll(Example.of(User.builder().login(CHROSCIU.getLogin()).build()))).thenReturn(Flux.just(CHROSCIU));
+        when(userRepository.findAll(Example.of(User.builder().login(OCTOCAT.getLogin()).build()))).thenReturn(Flux.just(OCTOCAT));
+        when(webSocketSession.send(any())).thenReturn(result);
         when(webSocketSession.textMessage(anyString()))
                 .thenAnswer((Answer<WebSocketMessage>) invocation -> createTextWebSocketMessage(invocation.getArgument(0)));
-        when(webSocketSession.send(any())).thenReturn(result);
+        when(webSocketSession.receive()).thenReturn(Flux.just(createTextWebSocketMessage(CHROSCIU.getLogin()), createTextWebSocketMessage(OCTOCAT.getLogin())));
         //when
         Mono<Void> actualResult = userWebSocketHandler.handle(webSocketSession);
         //then
         assertEquals(result, actualResult);
         verify(webSocketSession).send(captor.capture());
         StepVerifier.create(captor.getValue())
-                .assertNext(assertPayloadEquals(JANUSZ.getFirstName() + " " + JANUSZ.getLastName()))
-                .assertNext(assertPayloadEquals(MIREK.getFirstName() + " " + MIREK.getLastName()))
+                .assertNext(assertPayloadEquals(CHROSCIU.getId() + " " + CHROSCIU.getLogin()))
+                .assertNext(assertPayloadEquals(OCTOCAT.getId() + " " + OCTOCAT.getLogin()))
                 .verifyComplete();
     }
 

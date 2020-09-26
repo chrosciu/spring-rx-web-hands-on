@@ -10,9 +10,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.chrosciu.rxweb.util.Users.JANUSZ;
-import static com.chrosciu.rxweb.util.Users.JANUSZ_UNSAVED;
-import static com.chrosciu.rxweb.util.Users.MIREK;
+import static com.chrosciu.rxweb.data.TestUsers.CHROSCIU;
+import static com.chrosciu.rxweb.data.TestUsers.CHROSCIU_UNSAVED;
+import static com.chrosciu.rxweb.data.TestUsers.OCTOCAT;
 import static org.mockito.Mockito.when;
 
 public class UserMvcControllerTest {
@@ -29,7 +29,7 @@ public class UserMvcControllerTest {
 
     @Test
     public void testGetAllUsers() {
-        when(userRepository.findAll()).thenReturn(Flux.just(JANUSZ, MIREK));
+        when(userRepository.findAll()).thenReturn(Flux.just(CHROSCIU, OCTOCAT));
         webTestClient
                 .get()
                 .uri("/mvc/users")
@@ -37,42 +37,42 @@ public class UserMvcControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(2)
-                .jsonPath("$[0].firstName").isEqualTo("Janusz")
-                .jsonPath("$[1].firstName").isEqualTo("Mirek");
+                .jsonPath("$[0].login").isEqualTo(CHROSCIU.getLogin())
+                .jsonPath("$[1].login").isEqualTo(OCTOCAT.getLogin());
     }
 
     @Test
     public void testGetUser() {
-        when(userRepository.findById("1")).thenReturn(Mono.just(JANUSZ));
+        when(userRepository.findById(CHROSCIU.getId())).thenReturn(Mono.just(CHROSCIU));
         webTestClient
                 .get()
-                .uri("/mvc/users/1")
+                .uri(String.format("/mvc/users/%s", CHROSCIU.getId()))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.firstName").isEqualTo("Janusz");
+                .jsonPath("$.login").isEqualTo(CHROSCIU.getLogin());
     }
 
     @Test
     public void testAddUser() {
-        when(userRepository.save(JANUSZ_UNSAVED)).thenReturn(Mono.just(JANUSZ));
+        when(userRepository.save(CHROSCIU_UNSAVED)).thenReturn(Mono.just(CHROSCIU));
         webTestClient
                 .post()
                 .uri("/mvc/users")
-                .body(Mono.just(JANUSZ_UNSAVED), User.class)
+                .body(Mono.just(CHROSCIU_UNSAVED), User.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(1)
-                .jsonPath("$.firstName").isEqualTo("Janusz");
+                .jsonPath("$.id").isEqualTo(CHROSCIU.getId())
+                .jsonPath("$.login").isEqualTo(CHROSCIU.getLogin());
     }
 
     @Test
     public void testDeleteUser() {
-        Mockito.when(userRepository.deleteById("1")).thenReturn(Mono.empty());
+        Mockito.when(userRepository.deleteById(CHROSCIU.getId())).thenReturn(Mono.empty());
         webTestClient
                 .delete()
-                .uri("/mvc/users/1")
+                .uri(String.format("/mvc/users/%s", CHROSCIU.getId()))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
