@@ -1,6 +1,7 @@
 package com.chrosciu.rxweb.web.functional;
 
 import com.chrosciu.rxweb.model.GithubRepo;
+import com.chrosciu.rxweb.model.User;
 import com.chrosciu.rxweb.repository.UserRepository;
 import com.chrosciu.rxweb.web.client.GithubClient;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
@@ -35,10 +35,15 @@ public class GithubRouter {
     }
 
     private Mono<ServerResponse> getUserGithubRepos(ServerRequest request) {
-        Flux<GithubRepo> repos = userRepository.findById(request.pathVariable("id"))
-                .flatMapMany(user -> githubClient.getUserRepos(user.getLogin()));
-        return repos.next()
-                .flatMap(githubRepo -> ServerResponse.ok().body(repos, GithubRepo.class))
-                .switchIfEmpty(ServerResponse.notFound().build());
+        Mono<User> user = userRepository.findById(request.pathVariable("id")).cache();
+        Mono<Boolean> isUserPresent = user.hasElement();
+        return isUserPresent.flatMap(present -> {
+           if (present) {
+               return ServerResponse.ok().body(
+                       user.flatMapMany(u -> githubClient.getUserRepos(u.getLogin())), GithubRepo.class);
+           } else {
+               return ServerResponse.notFound().build();
+           }
+        });
     }
 }
