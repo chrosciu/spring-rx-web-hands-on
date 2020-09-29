@@ -74,7 +74,19 @@ public class GithubRouterTest {
                 .jsonPath("$.length()").isEqualTo(2)
                 .jsonPath("$[*].name").value((Consumer<List<String>>) s -> assertThat(s).containsExactlyInAnyOrder(
                 "chrosciu-first", "chrosciu-second"));
+    }
 
+    @Test
+    public void testGetUserGithubReposWithUserWithoutRepos() {
+        when(userRepository.findById(CHROSCIU.getId())).thenReturn(Mono.just(CHROSCIU));
+        when(githubClient.getUserRepos(CHROSCIU.getLogin())).thenReturn(Flux.empty());
+        webTestClient
+                .get()
+                .uri(String.format("/functional/github/users/%s/repos", CHROSCIU.getId()))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(0);
     }
 
     @Test
