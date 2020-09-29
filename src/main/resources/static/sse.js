@@ -8,17 +8,12 @@ window.onload = function() {
         }
         buttonClicked = true;
         var source = new EventSource('/sse/users/events');
-        var isOpenOnce = false;
-        source.onopen = function() {
-            if(isOpenOnce) {
-                source.close();
-            } else {
-                isOpenOnce = true;
-            }
-        };
         source.onmessage = function(event) {
             document.getElementById('result').innerHTML += '<div>' + event.data + '</div>';
         };
+        source.addEventListener('post', function () {
+            source.close();
+        });
     });
 }
 
