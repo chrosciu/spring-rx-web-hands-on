@@ -13,7 +13,7 @@ public class UsersWebSocketHandler implements WebSocketHandler {
     private final UserRepository userRepository;
 
     @Override
-    //TODO Send all users as WebSocket text messages in format "{firstName} {lastName}"
+    //TODO Send all users as WebSocket text messages in format "{id} {login}"
     public Mono<Void> handle(WebSocketSession session) {
         return null;
     }
