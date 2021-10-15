@@ -16,29 +16,20 @@ public class GithubClient {
     private final WebClient webClient;
 
     public GithubClient(@Value("${github.url}") String githubUrl,
-                        @Value("${github.token:#{null}}") String githubToken,
-                        @Value("${github.username:#{null}}") String githubUsername,
-                        @Value("${github.password:#{null}}") String githubPassword) {
+                        @Value("${github.token:#{null}}") String githubToken) {
         webClient = WebClient.builder()
                 .baseUrl(githubUrl)
-                .defaultHeaders(httpHeaders -> addAuthenticationHeaders(httpHeaders, githubToken, githubUsername, githubPassword))
+                .defaultHeaders(httpHeaders -> addAuthenticationHeaders(httpHeaders, githubToken))
                 .build();
     }
 
-    private void addAuthenticationHeaders(HttpHeaders httpHeaders, String githubToken, String githubUsername, String githubPassword) {
+    private void addAuthenticationHeaders(HttpHeaders httpHeaders, String githubToken) {
         if (githubToken != null && !githubToken.isEmpty()) {
             log.info("Created WebClient authentication filter with token");
             httpHeaders.set("Authorization", "token " + githubToken);
-        } else if (areCredentialsProvided(githubUsername, githubPassword)) {
-            log.info("WebClient authentication headers with credentials(username: {})", githubUsername);
-            httpHeaders.setBasicAuth(githubUsername, githubPassword);
         } else {
             log.info("WebClient without authentication headers");
         }
-    }
-
-    private boolean areCredentialsProvided(String githubUsername, String githubPassword) {
-        return githubUsername != null && !githubUsername.isEmpty() && githubPassword != null && !githubPassword.isEmpty();
     }
 
     //TODO Return all repos for given GitHub user

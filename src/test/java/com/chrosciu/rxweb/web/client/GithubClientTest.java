@@ -32,7 +32,7 @@ public class GithubClientTest {
     public void setup() {
         wireMockServer = new WireMockServer(options().dynamicPort().dynamicHttpsPort());
         wireMockServer.start();
-        githubClient = new GithubClient(String.format("http://localhost:%d", wireMockServer.port()), null, null, null);
+        githubClient = new GithubClient(String.format("http://localhost:%d", wireMockServer.port()), null);
     }
 
     @AfterEach
