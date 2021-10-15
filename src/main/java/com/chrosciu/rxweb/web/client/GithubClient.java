@@ -37,7 +37,13 @@ public class GithubClient {
         return webClient.get()
                 .uri("/users/{user}/repos", user)
                 .exchange()
-                .flatMapMany(response -> response.bodyToFlux(GithubRepo.class));
+                .flatMapMany(response -> {
+                    if (response.statusCode().isError()) {
+                        return response.createException().flatMap(Mono::error);
+                    } else {
+                        return response.bodyToFlux(GithubRepo.class);
+                    }
+                });
     }
 
     public Mono<Long> getUserNotProtectedBranchesCount(String user) {
