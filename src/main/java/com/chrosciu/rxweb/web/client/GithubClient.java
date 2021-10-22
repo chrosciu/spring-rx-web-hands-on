@@ -60,7 +60,7 @@ public class GithubClient {
     }
 
     public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
-        Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId);
+        Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId).cache();
         Mono<Long> lastUserId = currentPageUntilTo.last().map(GithubUser::getId);
         Flux<GithubUser> nextPage = lastUserId.flatMapMany(l -> l >= toId ? Flux.empty() : getUsersInRange(l, toId));
         return currentPageUntilTo.concatWith(nextPage);
