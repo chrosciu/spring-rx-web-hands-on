@@ -47,7 +47,7 @@ public class GithubClientIT {
     @Test
     public void testGetUserPublicBranchesCount() {
         Mono<Long> branchesCount = githubClient.getUserNotProtectedBranchesCount("chrosciu");
-        branchesCount.doFinally(st -> latch.countDown()).subscribe(l -> log.info("{}", branchesCount));
+        branchesCount.doFinally(st -> latch.countDown()).subscribe(l -> log.info("{}", l));
     }
 
     @Test
