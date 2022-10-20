@@ -18,11 +18,12 @@ public class DBInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Flux.fromIterable(usersConfig.getLogins())
-                .map(login -> User.builder().login(login).build())
-                .flatMap(userRepository::save)
-                .doOnSubscribe(s -> log.info("Database initialization - inserting users:"))
-                .doOnComplete(() -> log.info("Database initialized - users inserted"))
-        .subscribe(u -> log.info("{}", u));
+        userRepository.deleteAll().thenMany(
+                        Flux.fromIterable(usersConfig.getLogins())
+                                .map(login -> User.builder().login(login).build())
+                                .flatMap(userRepository::save)
+                                .doOnSubscribe(s -> log.info("Database initialization - inserting users:"))
+                                .doOnComplete(() -> log.info("Database initialized - users inserted"))
+                ).subscribe(u -> log.info("{}", u));
     }
 }
