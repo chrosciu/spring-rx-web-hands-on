@@ -81,7 +81,7 @@ public class GithubClientTest {
         GithubBranch branch2 = GithubBranch.builder().name("develop").protect(true).build();
         GithubBranch branch3 = GithubBranch.builder().name("feature").protect(false).build();
         GithubBranch branch4 = GithubBranch.builder().name("master").protect(true).build();
-        GithubBranch branch5 = GithubBranch.builder().name("develop").protect(false).build();
+        GithubBranch branch5 = GithubBranch.builder().name("develop").protect(true).build();
         GithubBranch branch6 = GithubBranch.builder().name("hotfix").protect(false).build();
         List<GithubBranch> branchesForRepo1 = Arrays.asList(branch1, branch2, branch3);
         List<GithubBranch> branchesForRepo2 = Arrays.asList(branch4, branch5, branch6);
@@ -100,7 +100,7 @@ public class GithubClientTest {
         //when
         Mono<Long> branchesCount = githubClient.getUserNotProtectedBranchesCount(user);
         //then
-        StepVerifier.create(branchesCount).expectNext(3L).verifyComplete();
+        StepVerifier.create(branchesCount).expectNext(2L).verifyComplete();
     }
 
 
