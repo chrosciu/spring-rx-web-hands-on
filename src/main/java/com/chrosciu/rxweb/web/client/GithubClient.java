@@ -49,13 +49,8 @@ public class GithubClient {
     public Flux<GithubRepo> getUserRepos(String user) {
         return webClient.get()
                 .uri("/users/{user}/repos", user)
-                .exchangeToFlux(response -> {
-                    if (response.statusCode().isError()) {
-                        return response.createException().flatMapMany(Flux::error);
-                    } else {
-                        return response.bodyToFlux(GithubRepo.class);
-                    }
-                });
+                .retrieve()
+                .bodyToFlux(GithubRepo.class);
     }
 
     public Mono<Long> getUserNotProtectedBranchesCount(String user) {
@@ -65,8 +60,8 @@ public class GithubClient {
     private Flux<GithubBranch> getRepoPublicBranches(String user, String repo) {
         return webClient.get()
                 .uri("/repos/{user}/{repo}/branches", user, repo)
-                .exchangeToFlux(response -> response
-                        .bodyToFlux(GithubBranch.class))
+                .retrieve()
+                .bodyToFlux(GithubBranch.class)
                 .filter(gb -> !Boolean.TRUE.equals(gb.getProtect()));
     }
 
@@ -80,7 +75,8 @@ public class GithubClient {
     private Flux<GithubUser> getPageOfUsers(long sinceId) {
         return webClient.get()
                 .uri("/users?since={sinceId}", sinceId)
-                .exchangeToFlux(response -> response.bodyToFlux(GithubUser.class));
+                .retrieve()
+                .bodyToFlux(GithubUser.class);
     }
 
 
