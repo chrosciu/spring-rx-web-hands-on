@@ -19,7 +19,7 @@ public class UserSseController {
     //2) for each user - data representing user, then 2 seconds delay
     //3) event: "post", data: "STOP"
     @GetMapping("/users/events")
-    public Flux<ServerSentEvent> getAllUsersSseEvents() {
+    public Flux<ServerSentEvent<?>> getAllUsersSseEvents() {
         return null;
     }
 }
