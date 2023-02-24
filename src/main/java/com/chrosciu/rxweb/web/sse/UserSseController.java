@@ -18,11 +18,11 @@ public class UserSseController {
     private final UserRepository userRepository;
 
     @GetMapping("/users/events")
-    public Flux<ServerSentEvent> getAllUsersSseEvents() {
-        Mono<ServerSentEvent> pre = Mono.just(ServerSentEvent.builder().event("pre").data("START").build());
-        Flux<ServerSentEvent> flux = userRepository.findAll().delayElements(Duration.ofSeconds(2))
+    public Flux<ServerSentEvent<?>> getAllUsersSseEvents() {
+        Mono<ServerSentEvent<?>> pre = Mono.just(ServerSentEvent.builder().event("pre").data("START").build());
+        Flux<ServerSentEvent<?>> flux = userRepository.findAll().delayElements(Duration.ofSeconds(2))
                 .map(u -> ServerSentEvent.builder().data(u).build());
-        Mono<ServerSentEvent> post = Mono.just(ServerSentEvent.builder().event("post").data("STOP").build());
+        Mono<ServerSentEvent<?>> post = Mono.just(ServerSentEvent.builder().event("post").data("STOP").build());
         return pre.concatWith(flux).concatWith(post);
     }
 }
