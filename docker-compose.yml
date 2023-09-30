@@ -4,7 +4,6 @@ services:
 
   mongo:
     image: mongo:6.0.2
-    restart: always
     ports:
       - '27017:27017'
     environment:
@@ -13,7 +12,6 @@ services:
 
   mongo-express:
     image: mongo-express:1.0.0-alpha
-    restart: always
     ports:
       - '8081:8081'
     environment:
