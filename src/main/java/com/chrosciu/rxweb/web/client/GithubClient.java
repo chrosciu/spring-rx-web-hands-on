@@ -48,7 +48,10 @@ public class GithubClient {
     //TODO Return all repos for given GitHub user
     //Use following GitHub endpoint: /users/{user}/repos
     public Flux<GithubRepo> getUserRepos(String user) {
-        return null;
+        return webClient.get()
+                .uri("/users/{user}/repos", user)
+                .retrieve()
+                .bodyToFlux(GithubRepo.class);
     }
 
     //TODO Return number of all not protected branches in all repos for given GitHub user
