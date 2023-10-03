@@ -1,0 +1,22 @@
+### Get all users
+GET http://localhost:8080/mvc/users
+
+### Get user
+GET http://localhost:8080/mvc/users/651bd7a8ed50c8729f8769ef
+
+### Get non existing user
+GET http://localhost:8080/mvc/users/baadf00d
+
+### Delete existing user
+DELETE http://localhost:8080/mvc/users/651bd896d7b4936ca0473371
+
+### Delete non existing user
+DELETE http://localhost:8080/mvc/users/baadf00d
+
+### Add user
+POST http://localhost:8080/mvc/users
+Content-Type: application/json
+
+{
+  "login": "lolo"
+}
