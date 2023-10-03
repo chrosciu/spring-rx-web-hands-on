@@ -20,3 +20,18 @@ Content-Type: application/json
 {
   "login": "lolo"
 }
+
+### Stream all users
+GET http://localhost:8080/streaming/users
+
+### Stream all users as ND JSON
+GET http://localhost:8080/streaming/users/ndjson
+
+### Stream all users as SSE
+GET http://localhost:8080/streaming/users/sse
+
+### Stream all users as SSE full
+GET http://localhost:8080/streaming/users/sse/full
+
+### Mixed SSE stream for users
+GET http://localhost:8080/sse/users/events
