@@ -1,5 +1,6 @@
 package com.chrosciu.rxweb.web.mvc;
 
+import com.chrosciu.rxweb.model.User;
 import com.chrosciu.rxweb.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.chrosciu.rxweb.model.User;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/mvc/users")
@@ -55,13 +56,25 @@ public class UserMvcController {
 
     // 4) DELETE /mvc/users/{id} - should delete user with given id
 
+//    @DeleteMapping("/{id}")
+//    public Mono<Void> deleteUser(@PathVariable String id) {
+//        return userRepository.deleteById(id);
+//    }
+
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteUser(@PathVariable String id) {
-        return userRepository.deleteById(id);
+    public Mono<ResponseEntity<?>> deleteUser(@PathVariable String id) {
+        Mono<Optional<User>> maybeUser = userRepository.findById(id)
+                .map(Optional::of)
+                .switchIfEmpty(Mono.just(Optional.empty()));
+
+        return maybeUser
+                .flatMap(maybe -> maybe
+                        .map(user -> userRepository.deleteById(id).then(ok))
+                        .orElse(notFound)
+                );
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Mono<?>> deleteUser(@PathVariable String id) {
-//    }
+    private final static Mono<ResponseEntity<?>> ok = Mono.just(ResponseEntity.ok().build());
+    private final static Mono<ResponseEntity<?>> notFound = Mono.just(ResponseEntity.notFound().build());
 }
 
