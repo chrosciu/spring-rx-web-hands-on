@@ -6,21 +6,17 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
 @Slf4j
-@Disabled("For manual run only")
 public class GithubClientIT {
     @Autowired
     private GithubClient githubClient;
@@ -35,7 +31,7 @@ public class GithubClientIT {
     @AfterEach
     @SneakyThrows
     public void teardown() {
-        latch.await();
+        latch.await(10, TimeUnit.SECONDS);
     }
 
     @Test
