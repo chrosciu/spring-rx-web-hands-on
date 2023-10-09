@@ -1,0 +1,8 @@
+### (none)
+GET http://localhost:8080/streaming/users
+
+### SSE
+GET http://localhost:8080/streaming/users/sse
+
+### NDJSON
+GET http://localhost:8080/streaming/users/ndjson
