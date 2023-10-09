@@ -1,15 +1,16 @@
 package com.chrosciu.rxweb.web.streaming;
 
+import com.chrosciu.rxweb.init.DBInitializer;
 import com.chrosciu.rxweb.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -20,13 +21,19 @@ public class StreamingControllerTest {
     //TODO: WebTestClient
     //TODO: More accurate assertions
 
+    @Autowired
+    private DBInitializer dbInitializer;
+
     @LocalServerPort
     private int localServerPort;
 
     private WebClient webClient;
 
-    @Container
-    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.2");
+    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.2").withReuse(true);
+
+    static {
+        mongoDBContainer.start();
+    }
 
     @DynamicPropertySource
     static void mongoProperties(DynamicPropertyRegistry registry) {
@@ -36,6 +43,7 @@ public class StreamingControllerTest {
     @BeforeEach
     void setup() {
         webClient = WebClient.create(String.format("http://localhost:%d", localServerPort));
+        dbInitializer.await();
     }
 
     @Test
