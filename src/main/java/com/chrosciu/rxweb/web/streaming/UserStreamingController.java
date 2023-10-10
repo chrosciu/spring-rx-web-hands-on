@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/streaming")
 @RequiredArgsConstructor
-public class StreamingController {
+public class UserStreamingController {
     private final UserRepository userRepository;
 
     //TODO: Delay as query param
