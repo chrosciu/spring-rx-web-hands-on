@@ -17,7 +17,7 @@ import reactor.test.StepVerifier;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-public class StreamingControllerTest {
+public class UserStreamingControllerTest {
     //TODO: WebTestClient
     //TODO: More accurate assertions
 

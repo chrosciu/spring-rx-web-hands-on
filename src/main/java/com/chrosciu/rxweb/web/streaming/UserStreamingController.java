@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE;
 @RestController
 @RequestMapping("/streaming")
 @RequiredArgsConstructor
-public class StreamingController {
+public class UserStreamingController {
     private final UserRepository userRepository;
 
     //TODO: Delay as query param
