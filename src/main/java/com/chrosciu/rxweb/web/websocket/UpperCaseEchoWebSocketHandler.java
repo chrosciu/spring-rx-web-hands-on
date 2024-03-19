@@ -13,25 +13,21 @@ import reactor.core.publisher.Mono;
 public class UpperCaseEchoWebSocketHandler implements WebSocketHandler {
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-//        return session.send(session.receive()
-//                .map(WebSocketMessage::getPayloadAsText)
-//                .map(String::toUpperCase)
-//                .map(session::textMessage));
-
         //receive messages
         Flux<String> receivedMessages = session.receive()
                 .map(webSocketMessage -> webSocketMessage.getPayloadAsText())
-                .doOnNext(message -> log.info("Message: {}", message));
+                .doOnNext(message -> log.info("Message received: {}", message));
 
         //process received messages
         Flux<String> processedMessages = receivedMessages.map(message -> message.toUpperCase());
 
         //send back processed messages
-        Flux<WebSocketMessage> messagesToSend = processedMessages.map(message -> session.textMessage(message));
+        Flux<WebSocketMessage> messagesToSend = processedMessages
+                .doOnNext(message -> log.info("Message to be sent: {}", message))
+                .map(message -> session.textMessage(message));
         Mono<Void> sendResult = session.send(messagesToSend);
 
-        //wait for both send & receive
-        Mono<Void> result = sendResult.then();
-        return result;
+        //wait for send (receive is not needed as send depends on it)
+        return sendResult;
     }
 }
