@@ -1,0 +1,17 @@
+github:
+    url: https://api.github.com
+    #Sorry but I'm not gonna to reveal my credentials here :)
+    #You can use following property or environment variable GITHUB_TOKEN
+    #token:
+
+users:
+    logins: mojombo,defunkt,pjhyett,wycats,ezmobius,ivey,evanphx,vanpelt,wayneeseguin,brynary,octocat,chrosciu
+
+logging:
+    level:
+        com.chrosciu.rxweb.web.client.GithubClient: TRACE
+        org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
+
+webclient:
+    wiretap:
+        enabled: true

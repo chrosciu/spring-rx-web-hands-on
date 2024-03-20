@@ -13,6 +13,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
@@ -23,12 +24,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
 @Slf4j
 public class UpperCaseEchoWebSocketTest {
     @LocalServerPort
     private int port;
 
-    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.2").withReuse(true);
+    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.2");
 
     static {
         mongoDBContainer.start();

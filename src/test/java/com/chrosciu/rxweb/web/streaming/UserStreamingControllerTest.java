@@ -31,7 +31,7 @@ public class UserStreamingControllerTest {
 
     private WebClient webClient;
 
-    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.2").withReuse(true);
+    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.2");
 
     static {
         mongoDBContainer.start();
