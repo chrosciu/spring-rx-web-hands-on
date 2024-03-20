@@ -1,19 +1,12 @@
 package eu.chrost.rxweb.web.functional;
 
-import eu.chrost.rxweb.model.GithubRepo;
-import eu.chrost.rxweb.model.User;
 import eu.chrost.rxweb.repository.UserRepository;
 import eu.chrost.rxweb.web.client.GithubClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
-
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
-import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
 @RequiredArgsConstructor
@@ -23,27 +16,11 @@ public class GithubRouter {
 
     @Bean
     RouterFunction<ServerResponse> githubRoutes() {
-        return route(GET("/functional/github/users/repos"), this::getAllUsersGithubRepos)
-                .and(route(GET("/functional/github/users/{id}/repos"), this::getUserGithubRepos));
+        return null;
     }
 
-    private Mono<ServerResponse> getAllUsersGithubRepos(ServerRequest request) {
-        return ServerResponse.ok().body(
-                userRepository.findAll()
-                        .flatMap(user -> githubClient.getUserRepos(user.getLogin())),
-                GithubRepo.class);
-    }
-
-    private Mono<ServerResponse> getUserGithubRepos(ServerRequest request) {
-        Mono<User> user = userRepository.findById(request.pathVariable("id")).cache();
-        Mono<Boolean> isUserPresent = user.hasElement();
-        return isUserPresent.flatMap(present -> {
-           if (present) {
-               return ServerResponse.ok().body(
-                       user.flatMapMany(u -> githubClient.getUserRepos(u.getLogin())), GithubRepo.class);
-           } else {
-               return ServerResponse.notFound().build();
-           }
-        });
-    }
+    //TODO Create following REST endpoints using functional endpoints
+    //GET /functional/github/users/repos - should return all GitHub repositories of all users
+    //GET /functional/github/users/{id}/repos - should return all GitHub repositories of user with given ID.
+    //(if there is no such user - HTTP 404 status code should be returned instead)
 }

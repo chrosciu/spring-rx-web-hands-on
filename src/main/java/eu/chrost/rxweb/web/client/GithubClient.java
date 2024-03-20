@@ -1,6 +1,5 @@
 package eu.chrost.rxweb.web.client;
 
-import eu.chrost.rxweb.model.GithubBranch;
 import eu.chrost.rxweb.model.GithubRepo;
 import eu.chrost.rxweb.model.GithubUser;
 import io.netty.handler.logging.LogLevel;
@@ -46,38 +45,21 @@ public class GithubClient {
         }
     }
 
+    //TODO Return all repos for given GitHub user
+    //Use following GitHub endpoint: /users/{user}/repos
     public Flux<GithubRepo> getUserRepos(String user) {
-        return webClient.get()
-                .uri("/users/{user}/repos", user)
-                .retrieve()
-                .bodyToFlux(GithubRepo.class);
+        return null;
     }
 
+    //TODO Return number of all not protected branches in all repos for given GitHub user
+    //Use following GitHub endpoints: /users/{user}/repos, /repos/{user}/{repo}/branches and GithubBranch class
     public Mono<Long> getUserNotProtectedBranchesCount(String user) {
-        return getUserRepos(user).flatMap(repo -> getRepoPublicBranches(user, repo.getName())).count();
+        return null;
     }
 
-    private Flux<GithubBranch> getRepoPublicBranches(String user, String repo) {
-        return webClient.get()
-                .uri("/repos/{user}/{repo}/branches", user, repo)
-                .retrieve()
-                .bodyToFlux(GithubBranch.class)
-                .filter(gb -> !Boolean.TRUE.equals(gb.getProtect()));
-    }
-
+    //TODO Return all GitHub users with id in range from sinceId (exclusively) to toId (inclusively)
+    //Use following GitHub endpoint: /users?since={sinceId}
     public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
-        Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId).cache();
-        Mono<Long> lastUserId = currentPageUntilTo.last().map(GithubUser::getId);
-        Flux<GithubUser> nextPage = lastUserId.flatMapMany(l -> l >= toId ? Flux.empty() : getUsersInRange(l, toId));
-        return currentPageUntilTo.concatWith(nextPage);
+        return null;
     }
-
-    private Flux<GithubUser> getPageOfUsers(long sinceId) {
-        return webClient.get()
-                .uri("/users?since={sinceId}", sinceId)
-                .retrieve()
-                .bodyToFlux(GithubUser.class);
-    }
-
-
 }
