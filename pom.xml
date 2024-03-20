@@ -8,7 +8,7 @@
 		<version>3.2.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.chrosciu</groupId>
+	<groupId>eu.chrost</groupId>
 	<artifactId>spring-rx-web-hands-on</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-rx-web-hands-on</name>

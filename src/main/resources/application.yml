@@ -9,8 +9,8 @@ users:
 
 logging:
     level:
-        com.chrosciu.rxweb.web.client.GithubClient: TRACE
-        org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
+      eu.chrost.rxweb.web.client.GithubClient: TRACE
+      org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
 
 webclient:
     wiretap:
