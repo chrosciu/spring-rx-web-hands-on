@@ -12,12 +12,12 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 
 @RestController
-@RequestMapping("/sse")
+@RequestMapping("/sse/users")
 @RequiredArgsConstructor
 public class UserSseController {
     private final UserRepository userRepository;
 
-    @GetMapping("/users/events")
+    @GetMapping("/events")
     public Flux<ServerSentEvent<?>> getAllUsersSseEvents() {
         Mono<ServerSentEvent<?>> pre = Mono.just(ServerSentEvent.builder().event("pre").data("START").build());
         Flux<ServerSentEvent<?>> flux = userRepository.findAll().delayElements(Duration.ofSeconds(2))

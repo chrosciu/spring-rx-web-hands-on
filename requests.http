@@ -6,3 +6,14 @@ GET http://localhost:8080/streaming/users/sse
 
 ### NDJSON
 GET http://localhost:8080/streaming/users/ndjson
+
+###
+POST http://localhost:8080/sse/upper-case?input=a
+
+> {%
+    client.assert(response.status === 200);
+    client.global.set("uuid", response.body);
+%}
+
+###
+GET http://localhost:8080/sse/upper-case/{{uuid}}
