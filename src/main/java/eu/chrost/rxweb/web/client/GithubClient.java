@@ -16,6 +16,8 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
+import java.util.List;
+
 @Component
 @Slf4j
 public class GithubClient {
@@ -65,19 +67,47 @@ public class GithubClient {
                 .filter(gb -> !Boolean.TRUE.equals(gb.getProtect()));
     }
 
+    /* new solution with expand() */
+
     public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
-        Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId).cache();
-        Mono<Long> lastUserId = currentPageUntilTo.last().map(GithubUser::getId);
-        Flux<GithubUser> nextPage = lastUserId.flatMapMany(l -> l >= toId ? Flux.empty() : getUsersInRange(l, toId));
-        return currentPageUntilTo.concatWith(nextPage);
+        return getPageOfUsersAsList(sinceId)
+                .expand(githubUsers -> {
+                    var lastUserId = githubUsers.get(githubUsers.size() - 1).getId();
+                    return lastUserId >= toId ? Flux.empty() : getPageOfUsersAsList(lastUserId);
+                })
+                .flatMapIterable(githubUsers -> githubUsers)
+                .takeWhile(githubUser -> githubUser.getId() <= toId);
     }
 
-    private Flux<GithubUser> getPageOfUsers(long sinceId) {
+
+    private Mono<List<GithubUser>> getPageOfUsersAsList(long sinceId) {
         return webClient.get()
                 .uri("/users?since={sinceId}", sinceId)
                 .retrieve()
-                .bodyToFlux(GithubUser.class);
+                .bodyToFlux(GithubUser.class)
+                .collectList();
+
     }
+
+
+    /* old solution with manual concatenation */
+
+//    public Flux<GithubUser> getUsersInRange(long sinceId, long toId) {
+//        Flux<GithubUser> currentPageUntilTo = getPageOfUsers(sinceId).takeWhile(u -> u.getId() <= toId).cache();
+//        Mono<Long> lastUserId = currentPageUntilTo.last().map(GithubUser::getId);
+//        Flux<GithubUser> nextPage = lastUserId.flatMapMany(l -> l >= toId ? Flux.empty() : getUsersInRange(l, toId));
+//        return currentPageUntilTo.concatWith(nextPage);
+//    }
+//
+//    private Flux<GithubUser> getPageOfUsers(long sinceId) {
+//        return webClient.get()
+//                .uri("/users?since={sinceId}", sinceId)
+//                .retrieve()
+//                .bodyToFlux(GithubUser.class);
+//    }
+
+
+
 
 
 }
