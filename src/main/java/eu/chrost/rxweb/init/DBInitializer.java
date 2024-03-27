@@ -28,7 +28,9 @@ public class DBInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        userRepository.deleteAll().thenMany(
+        userRepository
+                .deleteAll()
+                .thenMany(
                         Flux.fromIterable(usersConfig.getLogins())
                                 .map(login -> User.builder().login(login).build())
                                 .flatMap(userRepository::save)
