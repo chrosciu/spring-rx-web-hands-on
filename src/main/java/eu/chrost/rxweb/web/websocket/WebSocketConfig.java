@@ -20,8 +20,8 @@ public class WebSocketConfig {
     @Bean
     public HandlerMapping handlerMapping() {
         Map<String, WebSocketHandler> map = new HashMap<>();
-        //map.put("/ws/users", usersWebSocketHandler);
-        //map.put("/ws/user", userWebSocketHandler);
+        map.put("/ws/users", usersWebSocketHandler);
+        map.put("/ws/user", userWebSocketHandler);
         map.put("/ws/upper-case-echo", upperCaseEchoWebSocketHandler);
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
