@@ -1,13 +1,34 @@
-### (none)
-GET http://localhost:8080/streaming/users
+### Get all users
+GET http://localhost:8080/mvc/users
 
-### SSE
-GET http://localhost:8080/streaming/users/sse
+### Create new user
+POST http://localhost:8080/mvc/users
+Content-Type: application/json
 
-### NDJSON
-GET http://localhost:8080/streaming/users/ndjson
+{
+  "login": "dummy"
+}
 
-###
+> {%
+    client.assert(response.status === 200);
+    client.global.set("userId", response.body.id);
+%}
+
+### Get single user
+GET http://localhost:8080/mvc/users/{{userId}}
+
+### Delete user
+DELETE http://localhost:8080/mvc/users/{{userId}}
+
+> {%
+    client.assert(response.status === 200);
+    client.global.clear("userId");
+%}
+
+### Users SSE
+GET http://localhost:8080/sse/users/events
+
+### Upper case SSE - start
 POST http://localhost:8080/sse/upper-case?input=a
 
 > {%
@@ -15,5 +36,15 @@ POST http://localhost:8080/sse/upper-case?input=a
     client.global.set("uuid", response.body);
 %}
 
-###
+### Upper case SSE - results
 GET http://localhost:8080/sse/upper-case/{{uuid}}
+
+### No streaming
+GET http://localhost:8080/streaming/users
+
+### SSE streaming
+GET http://localhost:8080/streaming/users/sse
+
+### NDJSON streaming
+GET http://localhost:8080/streaming/users/ndjson
+
