@@ -48,3 +48,26 @@ GET http://localhost:8080/streaming/users/sse
 ### NDJSON streaming
 GET http://localhost:8080/streaming/users/ndjson
 
+### Upper case echo - WebSocket
+WEBSOCKET ws://localhost:8080/ws/upper-case-echo
+
+===
+marcin
+=== wait-for-server
+===
+tomasz
+=== wait-for-server
+
+### Get all users - WebSocket
+WEBSOCKET ws://localhost:8080/ws/users
+
+### Get user by login - WebSocker
+WEBSOCKET ws://localhost:8080/ws/user
+
+===
+chrosciu
+=== wait-for-server
+===
+octocat
+=== wait-for-server
+
